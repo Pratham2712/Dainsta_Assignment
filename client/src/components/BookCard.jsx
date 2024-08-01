@@ -14,6 +14,7 @@ import EditBook from "./EditBook.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { getBookDetailThunk } from "../redux/slices/bookPageSlice.js";
 import { SUCCESS } from "../constants/constants.js";
+import DeleteBook from "./DeleteBook.jsx";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -21,6 +22,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const BookCard = ({ data }) => {
   const [open, setOpen] = useState(false);
+  const [del, setDel] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const theme = createTheme({
@@ -130,6 +132,9 @@ const BookCard = ({ data }) => {
           variant="contained"
           sx={{ width: "50%", marginRight: "0.3rem" }}
           color="error"
+          onClick={() => {
+            setDel(true);
+          }}
         >
           Delete
         </Button>
@@ -156,7 +161,13 @@ const BookCard = ({ data }) => {
         Transition={Transition}
         handleClickOpen={handleClickOpen}
         handleClose={handleClose}
-        content={content}
+      />
+      <DeleteBook
+        open={del}
+        Transition={Transition}
+        handleClickOpen={() => setDel(true)}
+        handleClose={() => setDel(false)}
+        id={data?._id}
       />
     </Box>
   );

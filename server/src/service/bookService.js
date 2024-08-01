@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import bookModel from "../Models/bookModel.js";
 import reviewModel from "../Models/reviewModel.js";
 
@@ -80,6 +81,21 @@ export const addBookService = async (data) => {
   return res;
 };
 export const editBookService = async (data) => {
-  //const res = await bookModel.create(data);
-  //return res;
+  const { _id, ...updateData } = data;
+
+  const result = await bookModel.updateOne(
+    { _id: mongoose.Types.ObjectId(_id) },
+    { $set: updateData }
+  );
+
+  return result;
+};
+
+export const delBookService = async (data) => {
+  const { _id } = data;
+  console.log(_id);
+  const result = await bookModel.deleteOne({
+    _id: mongoose.Types.ObjectId(_id),
+  });
+  return result;
 };

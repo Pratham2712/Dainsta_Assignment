@@ -3,6 +3,7 @@ import {
   addBookController,
   checkCommentController,
   commentController,
+  delBookController,
   editBookController,
   editCommentController,
   getBookController,
@@ -16,6 +17,7 @@ export const bookRouter = Router();
 bookRouter.post("/getBook", getBookController);
 bookRouter.post("/addBook", addBookController);
 bookRouter.put("/editBook", editBookController);
+bookRouter.delete("/deleteBook/:id", delBookController);
 bookRouter.post("/getBookDetail", getBookDetailController);
 bookRouter.post("/comment", verifyToken, commentController);
 bookRouter.post("/checkComment", verifyToken, checkCommentController);

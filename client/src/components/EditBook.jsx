@@ -21,10 +21,12 @@ import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { SUCCESS } from "../constants/constants";
 import dayjs from "dayjs";
-import { editBookThunk } from "../redux/slices/bookSlice";
+import { editBookThunk, getBooksThunk } from "../redux/slices/bookSlice";
+import { useSearchParams } from "react-router-dom";
 
 const EditBook = ({ open: start, Transition, handleClose }) => {
   const [successMsg, setSuccessMsg] = useState({ type: false, msg: "" });
+  const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
   const [state, setState] = useState({
     open: false,
@@ -42,7 +44,7 @@ const EditBook = ({ open: start, Transition, handleClose }) => {
     title: content?.title || "",
     cover: content?.cover?.[0] || "",
     description: content?.cover || "",
-    author: content?.author?.[0] || "",
+    author: content?.author || "",
     publishedDate: content?.publishedDate || null,
     language: content?.language || "",
   });
@@ -50,10 +52,7 @@ const EditBook = ({ open: start, Transition, handleClose }) => {
   const schema = yup.object().shape({
     cover: yup.string().required("Cover URL is required"),
     title: yup.string().required("Title is required"),
-    author: yup
-      .array()
-      .of(yup.string().required("Author name is required"))
-      .min(1, "At least one author is required"),
+    author: yup.string().required("Author is required"),
     language: yup.string().required("Language is required"),
     description: yup.string().required("Description is required"),
     publishedDate: yup.date().required("Published Date is required"),
@@ -61,18 +60,19 @@ const EditBook = ({ open: start, Transition, handleClose }) => {
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors },
     control,
     setValue,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      cover: content?.cover?.[0],
-      title: content?.title,
-      author: content?.author?.[0],
-      language: content?.language,
-      description: content?.description,
-      publishedDate: content?.publishedDate,
+      // cover: content?.cover?.[0],
+      // title: content?.title,
+      // author: content?.author?.[0],
+      // language: content?.language,
+      // description: content?.description,
+      // publishedDate: content?.publishedDate,
     },
   });
   //function
@@ -86,9 +86,21 @@ const EditBook = ({ open: start, Transition, handleClose }) => {
           msg: "Book edited successfully",
         }));
         handleClose();
+        const info = {
+          page: searchParams.get("page") - 1 || 0,
+          pagesize: searchParams.get("pagesize") || 8,
+        };
+        dispatch(getBooksThunk(info));
       }
     });
   };
+
+  const handleChange = (event, name) => {
+    setValue(name, event.target.value);
+    setFill((prev) => ({ ...prev, name: event.target.value }));
+    trigger(name);
+  };
+
   useEffect(() => {
     setValue("title", content?.title);
     setValue("cover", content?.cover?.[0]);
@@ -165,7 +177,8 @@ const EditBook = ({ open: start, Transition, handleClose }) => {
             {...register("cover")}
             error={!!errors.coverUrl}
             helperText={errors.coverUrl?.message}
-            value={fill.cover}
+            //value={fill.cover}
+            onChange={(e) => handleChange(e, "cover")}
           />
 
           <TextField
@@ -177,7 +190,8 @@ const EditBook = ({ open: start, Transition, handleClose }) => {
             {...register("title")}
             error={!!errors.title}
             helperText={errors.title?.message}
-            value={fill.title}
+            //value={fill.title}
+            onChange={(e) => handleChange(e, "title")}
           />
           <TextField
             required
@@ -188,7 +202,8 @@ const EditBook = ({ open: start, Transition, handleClose }) => {
             {...register("author")}
             error={!!errors.author}
             helperText={errors.author?.message}
-            value={fill.author}
+            //value={fill.author}
+            onChange={(e) => handleChange(e, "author")}
           />
           <TextField
             required
@@ -199,7 +214,8 @@ const EditBook = ({ open: start, Transition, handleClose }) => {
             {...register("language")}
             error={!!errors.language}
             helperText={errors.language?.message}
-            value={fill.language}
+            //value={fill.language}
+            onChange={(e) => handleChange(e, "language")}
           />
           <TextField
             required
@@ -212,7 +228,8 @@ const EditBook = ({ open: start, Transition, handleClose }) => {
             {...register("description")}
             error={!!errors.description}
             helperText={errors.description?.message}
-            value={fill.description}
+            //value={fill.description}
+            onChange={(e) => handleChange(e, "description")}
           />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Controller

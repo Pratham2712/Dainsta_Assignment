@@ -19,11 +19,13 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
-import { addBookThunk } from "../redux/slices/bookSlice";
+import { addBookThunk, getBooksThunk } from "../redux/slices/bookSlice";
 import { SUCCESS } from "../constants/constants";
+import { useSearchParams } from "react-router-dom";
 
 const AddBook = ({ open: start, Transition, handleClose }) => {
   const [successMsg, setSuccessMsg] = useState({ type: false, msg: "" });
+  const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
   const [state, setState] = useState({
     open: false,
@@ -59,7 +61,6 @@ const AddBook = ({ open: start, Transition, handleClose }) => {
   });
   //function
   const onSubmit = (data) => {
-    console.log(data);
     dispatch(addBookThunk(data)).then((data) => {
       if (data.payload.type === SUCCESS) {
         setSuccessMsg((prevSuccessMsg) => ({
@@ -68,6 +69,11 @@ const AddBook = ({ open: start, Transition, handleClose }) => {
           msg: "Book added successfully",
         }));
         handleClose();
+        const info = {
+          page: searchParams.get("page") - 1 || 0,
+          pagesize: searchParams.get("pagesize") || 8,
+        };
+        dispatch(getBooksThunk(info));
       }
     });
   };

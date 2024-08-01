@@ -3,6 +3,7 @@ import {
   addBookService,
   checkCommentService,
   commentService,
+  delBookService,
   editBookService,
   editCommentService,
   getBookDetailService,
@@ -169,18 +170,39 @@ export const addBookController = async (req, res, next) => {
 export const editBookController = async (req, res, next) => {
   try {
     const data = req.body;
-    console.log(data);
     const result = await editBookService(data);
     if (result) {
       return res.status(200).json({
         type: SUCCESS,
-        message: "Book added successfully",
+        message: "Book edited successfully",
         data: result,
       });
     } else {
       return res.status(400).json({
         type: FAILURE,
-        message: "Failed to add",
+        message: "Failed to edit",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const delBookController = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await delBookService({ _id: id });
+    if (result.deletedCount !== 0) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Book delete successfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to delete",
         errors: [],
       });
     }
