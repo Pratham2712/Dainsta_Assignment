@@ -10,18 +10,22 @@ const Books = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   //use effect
-  useEffect(() => {
-    pageParams(
-      searchParams.get("page") || 1,
-      searchParams.get("pagesize") || 8
-    );
-    const data = {
-      page: searchParams.get("page") - 1 || 0,
-      pagesize: searchParams.get("pagesize") || 8,
-      word: searchParams.get("query") || "",
-    };
-    dispatch(getBooksThunk(data));
-  }, [searchParams.get("page"), searchParams.get("pagesize")]);
+  useEffect(
+    () => {
+      pageParams(
+        searchParams.get("page") || 1,
+        searchParams.get("pagesize") || 8
+      );
+      const data = {
+        page: searchParams.get("page") - 1 || 0,
+        pagesize: searchParams.get("pagesize") || 8,
+        word: searchParams.get("query") || "",
+      };
+      dispatch(getBooksThunk(data));
+    },
+    [searchParams.get("page"), searchParams.get("pagesize")],
+    searchParams.get("query")
+  );
   useEffect(() => {
     const params = Object.fromEntries(searchParams);
     params["page"] = 1;
